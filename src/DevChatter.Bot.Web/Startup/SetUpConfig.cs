@@ -1,5 +1,6 @@
 ﻿using System;
 using DevChatter.Bot.Infra.Twitch;
+using DevChatter.Bot.Web;
 using Microsoft.Extensions.Configuration;
 
 namespace DevChatter.Bot.Startup

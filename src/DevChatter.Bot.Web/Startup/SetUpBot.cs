@@ -22,7 +22,6 @@ namespace DevChatter.Bot.Startup
             var twitchChatClient = new TwitchChatClient(twitchSettings, twitchApi);
             var chatClients = new List<IChatClient>
             {
-                new ConsoleChatClient(),
                 twitchChatClient,
             };
             var twitchFollowerService = new TwitchFollowerService(twitchApi, twitchSettings);
@@ -51,6 +50,7 @@ namespace DevChatter.Bot.Startup
             allCommands.Add(new RemoveCommandCommand(repository));
             allCommands.Add(new HangmanCommand(hangmanGame));
             allCommands.Add(new RockPaperScissorsCommand(rockPaperScissorsGame));
+            allCommands.Add(new HypeCommand());
 
             var commandHandler = new CommandHandler(chatClients, allCommands);
             var subscriberHandler = new SubscriberHandler(chatClients);
