@@ -10,6 +10,8 @@ using DevChatter.Bot.Core.Systems.Chat;
 using DevChatter.Bot.Core.Systems.Streaming;
 using DevChatter.Bot.Infra.Twitch;
 using DevChatter.Bot.Infra.Twitch.Events;
+using DevChatter.Bot.Web.Bot;
+using DevChatter.Bot.Web.Bot.Overlay;
 using TwitchLib;
 
 namespace DevChatter.Bot.Startup
@@ -50,7 +52,7 @@ namespace DevChatter.Bot.Startup
             allCommands.Add(new RemoveCommandCommand(repository));
             allCommands.Add(new HangmanCommand(hangmanGame));
             allCommands.Add(new RockPaperScissorsCommand(rockPaperScissorsGame));
-            allCommands.Add(new HypeCommand());
+            allCommands.Add(new HypeCommand(new DisplaySimpleImage(StaticImages.HypeEmote)));
 
             var commandHandler = new CommandHandler(chatClients, allCommands);
             var subscriberHandler = new SubscriberHandler(chatClients);
