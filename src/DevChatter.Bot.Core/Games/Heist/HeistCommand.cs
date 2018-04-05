@@ -1,0 +1,77 @@
+﻿using System;
+using System.Linq;
+using DevChatter.Bot.Core.Commands;
+using DevChatter.Bot.Core.Data.Model;
+using DevChatter.Bot.Core.Events;
+using DevChatter.Bot.Core.Systems.Chat;
+
+namespace DevChatter.Bot.Core.Games.Heist
+{
+    public class HeistCommand : IBotCommand
+    {
+        private readonly HeistGame _heistGame;
+        public UserRole RoleRequired { get; }
+        public string CommandText { get; }
+        public string HelpText { get; }
+        public bool IsEnabled { get; }
+
+        public HeistCommand(HeistGame heistGame)
+        {
+            _heistGame = heistGame;
+            RoleRequired = UserRole.Everyone;
+            CommandText = "Heist";
+            HelpText = "But it's so intuitive... Sorry, help is coming soon...";
+            IsEnabled = true;
+        }
+        public void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs)
+        {
+            if (eventArgs == null) throw new ArgumentNullException(nameof(eventArgs)); // How!?!?
+
+            string roleRequest = eventArgs.Arguments?.ElementAtOrDefault(0);
+
+            ChatUser chatUser = eventArgs.ChatUser;
+            _heistGame.AttemptToStartGame(chatClient, chatUser);
+
+            if (!_heistGame.IsGameRunning)
+            {
+                return;
+            }
+            if (roleRequest == null)
+            {
+                JoinHeistRandom(chatClient, chatUser);
+            }
+            else if (Enum.TryParse(roleRequest, true, out HeistRoles role))
+            {
+                JoinHeistByRole(chatClient, chatUser, role);
+            }
+            else
+            {
+                chatClient.SendMessage("I don't know what role you wanted to be. Try again?");
+            }
+        }
+
+        private void JoinHeistRandom(IChatClient chatClient, ChatUser chatUser)
+        {
+            if (_heistGame.AttemptToJoinHeist(chatUser, out HeistRoles role))
+            {
+                chatClient.SendMessage($"{chatUser.DisplayName} joined the heist as the {role}!");
+            }
+            else
+            {
+                chatClient.SendMessage($"Sorry, {chatUser.DisplayName} the heist is full!");
+            }
+        }
+
+        private void JoinHeistByRole(IChatClient chatClient, ChatUser chatUser, HeistRoles role)
+        {
+            if (_heistGame.AttemptToJoinHeist(chatUser, role))
+            {
+                chatClient.SendMessage($"{chatUser.DisplayName} joined the heist as the {role}!");
+            }
+            else
+            {
+                chatClient.SendMessage($"Sorry, {chatUser.DisplayName} we already have a {role}!");
+            }
+        }
+    }
+}
