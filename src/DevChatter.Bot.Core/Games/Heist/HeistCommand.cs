@@ -7,23 +7,18 @@ using DevChatter.Bot.Core.Systems.Chat;
 
 namespace DevChatter.Bot.Core.Games.Heist
 {
-    public class HeistCommand : IBotCommand
+    public class HeistCommand : BaseCommand
     {
         private readonly HeistGame _heistGame;
-        public UserRole RoleRequired { get; }
-        public string CommandText { get; }
-        public string HelpText { get; }
-        public bool IsEnabled { get; }
 
         public HeistCommand(HeistGame heistGame)
+            : base(UserRole.Everyone, "Heist")
         {
             _heistGame = heistGame;
-            RoleRequired = UserRole.Everyone;
-            CommandText = "Heist";
             HelpText = "But it's so intuitive... Sorry, help is coming soon...";
-            IsEnabled = true;
         }
-        public void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs)
+
+        public override void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs)
         {
             if (eventArgs == null) throw new ArgumentNullException(nameof(eventArgs)); // How!?!?
 
