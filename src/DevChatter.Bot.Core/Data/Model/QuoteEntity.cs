@@ -2,7 +2,7 @@
 
 namespace DevChatter.Bot.Core.Data.Model
 {
-    public class QuoteEntity : DataEntity
+	public class QuoteEntity : DataEntity
     {
         public int QuoteId { get; set; }
         public string Text { get; set; }
