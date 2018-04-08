@@ -6,21 +6,25 @@ using DevChatter.Bot.Core.Systems.Chat;
 
 namespace DevChatter.Bot.Core.Commands
 {
-    public class CommandsCommand : BaseCommand
+    public class PermissionCommand : BaseCommand
     {
-        private readonly List<IBotCommand> _allCommands;
+        private readonly CommandContainer _allCommands;
+	    private readonly ICommandResolver _commandResolver;
 
-        public CommandsCommand(List<IBotCommand> allCommands)
+        public PermissionCommand(CommandContainer allCommands, ICommandResolver commandResolver)
             : base(UserRole.Everyone)
         {
-            _allCommands = allCommands;
+	        _allCommands = allCommands;
+	        _commandResolver = commandResolver;
         }
 
         public override void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs)
-        {
+        {/*
             var listOfCommands = _allCommands.Where(x => eventArgs.ChatUser.CanUserRunCommand(x)).Select(x => $"!{x.PrimaryCommandText}").ToList();
-
-            string stringOfCommands = string.Join(", ", listOfCommands);
+			*/
+	        var listOfCommands = _commandResolver.CommandWords;
+	        // TODO: Fix command permission search, new commadn resolver has no knowledge of permission.
+			string stringOfCommands = string.Join(", ", listOfCommands);
             chatClient.SendMessage($"These are the commands that {eventArgs.ChatUser.DisplayName} is allowed to run: ({stringOfCommands})");
         }
     }

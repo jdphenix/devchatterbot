@@ -9,13 +9,15 @@ namespace DevChatter.Bot.Core.Commands
 {
     public class HelpCommand : BaseCommand
     {
-        private readonly List<IBotCommand> _allCommands;
+        private readonly CommandContainer _allCommands;
+	    private readonly ICommandResolver _commandResolver;
 
-        public HelpCommand(List<IBotCommand> allCommands)
+	    public HelpCommand(CommandContainer allCommands, ICommandResolver commandResolver)
             : base(UserRole.Everyone)
         {
             _allCommands = allCommands;
-            HelpText = "I think you figured this out already...";
+	        _commandResolver = commandResolver;
+	        HelpText = "I think you figured this out already...";
         }
 
         public override void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs)
@@ -49,8 +51,11 @@ namespace DevChatter.Bot.Core.Commands
 
         private void ShowAvailableCommands(IChatClient chatClient, ChatUser chatUser)
         {
-            var commands = _allCommands.Where(chatUser.CanUserRunCommand).Select(x => $"!{x.PrimaryCommandText}");
-            string stringOfCommands = string.Join(", ", commands);
+			// TODO: Fix command permission search, new commadn resolver has no knowledge of permission.
+
+            var commands = _commandResolver.CommandWords;
+			
+	        string stringOfCommands = string.Join(", ", commands);
 
             string message = $"These are the commands that {chatUser.DisplayName} is allowed to run: ({stringOfCommands})";
             chatClient.SendMessage(message);

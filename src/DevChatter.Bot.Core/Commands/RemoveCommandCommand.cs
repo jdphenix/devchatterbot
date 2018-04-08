@@ -12,9 +12,9 @@ namespace DevChatter.Bot.Core.Commands
     public class RemoveCommandCommand : BaseCommand
     {
         private readonly IRepository _repository;
-        private readonly List<IBotCommand> _allCommands;
+        private readonly CommandContainer _allCommands;
 
-        public RemoveCommandCommand(IRepository repository, List<IBotCommand> allCommands)
+        public RemoveCommandCommand(IRepository repository, CommandContainer allCommands)
             : base(UserRole.Mod)
         {
             _repository = repository;

@@ -9,7 +9,7 @@ namespace UnitTests.Fakes
     public class FakeCommand : BaseCommand
     {
         public FakeCommand(string commandText, bool isEnabled)
-            : base(UserRole.Everyone, new []{ commandText }, isEnabled)
+            : base(UserRole.Everyone, isEnabled)
         {
         }
 
@@ -19,6 +19,5 @@ namespace UnitTests.Fakes
         }
 
         public bool ProcessWasCalled { get; set; }
-        public string CommandText => CommandWords.First();
     }
 }

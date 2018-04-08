@@ -9,15 +9,17 @@ namespace DevChatter.Bot.Core.Events
     public class CommandHandler
     {
         private readonly CommandUsageTracker _usageTracker;
-        private readonly List<IBotCommand> _commandMessages;
+        private readonly CommandContainer _commandMessages;
+	    private readonly ICommandResolver _commandResolver;
 
         public CommandHandler(CommandUsageTracker usageTracker, List<IChatClient> chatClients,
-            List<IBotCommand> commandMessages)
+	        CommandContainer commandMessages, ICommandResolver commandResolver)
         {
             _usageTracker = usageTracker;
             _commandMessages = commandMessages;
+	        _commandResolver = commandResolver;
 
-            foreach (var chatClient in chatClients)
+	        foreach (var chatClient in chatClients)
             {
                 chatClient.OnCommandReceived += CommandReceivedHandler;
             }
@@ -25,31 +27,31 @@ namespace DevChatter.Bot.Core.Events
 
         public void CommandReceivedHandler(object sender, CommandReceivedEventArgs e)
         {
-            if (sender is IChatClient chatClient)
-            {
-                string userDisplayName = e.ChatUser.DisplayName;
+	        if (!(sender is IChatClient chatClient)) return;
 
-                _usageTracker.PurgeExpiredUserCommandCooldowns(DateTimeOffset.Now);
+	        var userDisplayName = e.ChatUser.DisplayName;
 
-                var previousUsage = _usageTracker.GetByUserDisplayName(userDisplayName);
-                if (previousUsage != null)
-                {
-                    if (!previousUsage.WasUserWarned)
-                    {
-                        chatClient.SendMessage($"Whoa {userDisplayName}! Slow down there cowboy!");
-                        previousUsage.WasUserWarned = true;
-                    }
+	        _usageTracker.PurgeExpiredUserCommandCooldowns(DateTimeOffset.Now);
 
-                    return;
-                }
+	        var previousUsage = _usageTracker.GetByUserDisplayName(userDisplayName);
+	        if (previousUsage != null)
+	        {
+		        if (previousUsage.WasUserWarned) return;
 
-                IBotCommand botCommand = _commandMessages.FirstOrDefault(c => c.ShouldExecute(e.CommandWord));
-                if (botCommand != null)
-                {
-                    AttemptToRunCommand(e, botCommand, chatClient);
-                    _usageTracker.RecordUsage(new CommandUsage(userDisplayName, DateTimeOffset.Now, false));
-                }
-            }
+		        chatClient.SendMessage($"Whoa {userDisplayName}! Slow down there cowboy!");
+		        previousUsage.WasUserWarned = true;
+		        return;
+	        }
+
+	        var commandType = _commandResolver.CommandFor(e.CommandWord);
+
+	        var botCommand = _commandMessages.FirstOrDefault(c => c.GetType() == commandType && c.ShouldExecute(e.CommandWord));
+
+	        if (botCommand != null)
+	        {
+		        AttemptToRunCommand(e, botCommand, chatClient);
+		        _usageTracker.RecordUsage(new CommandUsage(userDisplayName, DateTimeOffset.Now, false));
+	        }
         }
 
         private void AttemptToRunCommand(CommandReceivedEventArgs e, IBotCommand botCommand, IChatClient chatClient1)

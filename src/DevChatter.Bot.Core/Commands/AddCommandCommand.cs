@@ -12,9 +12,9 @@ namespace DevChatter.Bot.Core.Commands
     public class AddCommandCommand : BaseCommand
     {
         private readonly IRepository _repository;
-        private readonly List<IBotCommand> _allCommands;
+        private readonly CommandContainer _allCommands;
 
-        public AddCommandCommand(IRepository repository, List<IBotCommand> allCommands)
+        public AddCommandCommand(IRepository repository, CommandContainer allCommands)
             : base(UserRole.Mod)
         {
             _repository = repository;

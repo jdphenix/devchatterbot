@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DevChatter.Bot.Core.Commands;
 using DevChatter.Bot.Core.Events;
 using DevChatter.Bot.Core.Systems.Chat;
@@ -16,7 +17,7 @@ namespace UnitTests.Core.Events.CommandHandlerTests
             CommandHandler commandHandler = GetTestCommandHandler(fakeCommand);
 
             commandHandler.CommandReceivedHandler(new FakeChatClient(), 
-                new CommandReceivedEventArgs { CommandWord = fakeCommand.CommandText});
+                new CommandReceivedEventArgs { CommandWord = "Fake" });
 
             Assert.True(fakeCommand.ProcessWasCalled);
         }
@@ -28,7 +29,7 @@ namespace UnitTests.Core.Events.CommandHandlerTests
             CommandHandler commandHandler = GetTestCommandHandler(fakeCommand);
 
             commandHandler.CommandReceivedHandler(new FakeChatClient(), 
-                new CommandReceivedEventArgs { CommandWord = fakeCommand.CommandText });
+                new CommandReceivedEventArgs { CommandWord = "Fake" });
 
             Assert.False(fakeCommand.ProcessWasCalled);
         }
@@ -37,8 +38,13 @@ namespace UnitTests.Core.Events.CommandHandlerTests
         {
             var commandUsageTracker = new CommandUsageTracker(new CommandHandlerSettings());
             var chatClients = new List<IChatClient> { new FakeChatClient() };
-            var commandMessages = new List<IBotCommand> { fakeCommand };
-            var commandHandler = new CommandHandler(commandUsageTracker, chatClients, commandMessages);
+
+			// TODO: mock container and resolver
+	        var commandMessages = new CommandContainer();
+			var commandResolver = new CommandResolver();
+			commandMessages.CommandAdded += (sender, args) => commandResolver.AddCommandResolution(args.CommandType);
+			commandMessages.Add(fakeCommand);
+            var commandHandler = new CommandHandler(commandUsageTracker, chatClients, commandMessages, commandResolver);
             return commandHandler;
         }
     }

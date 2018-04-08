@@ -11,23 +11,21 @@ namespace DevChatter.Bot.Core.Commands
     {
         private readonly bool _isEnabled;
         public UserRole RoleRequired { get; }
-        public string PrimaryCommandText => CommandWords.First();
-        public IList<string> CommandWords { get; }
         public string HelpText { get; protected set; }
 
-        protected BaseCommand(UserRole roleRequired, params string[] commandWords)
-            : this(roleRequired, commandWords, true)
+        protected BaseCommand(UserRole roleRequired)
+            : this(roleRequired, true)
         {
         }
-        protected BaseCommand(UserRole roleRequired, IList<string> commandWords, bool isEnabled)
+
+        protected BaseCommand(UserRole roleRequired, bool isEnabled)
         {
-            CommandWords = commandWords;
             RoleRequired = roleRequired;
             _isEnabled = isEnabled;
         }
 
 
-        public bool ShouldExecute(string commandText) => _isEnabled && CommandWords.Any(x => x.EqualsIns(commandText));
+        public bool ShouldExecute(string commandText) => _isEnabled;
 
         public abstract void Process(IChatClient chatClient, CommandReceivedEventArgs eventArgs);
     }

@@ -42,12 +42,16 @@ namespace DevChatter.Bot.Startup
 
             var simpleCommands = repository.List<SimpleCommand>();
 
-            List<IBotCommand> allCommands = new List<IBotCommand>();
+            CommandContainer allCommands = new CommandContainer();
+			CommandResolver commandResolver = new CommandResolver();
+
+	        allCommands.CommandAdded += (sender, args) => commandResolver.AddCommandResolution(args.CommandType);
+
             allCommands.AddRange(simpleCommands);
             allCommands.Add(new UptimeCommand(twitchPlatform));
             allCommands.Add(new GiveCommand(chatUserCollection));
-            allCommands.Add(new HelpCommand(allCommands));
-            allCommands.Add(new CommandsCommand(allCommands));
+            allCommands.Add(new HelpCommand(allCommands, commandResolver));
+            allCommands.Add(new PermissionCommand(allCommands, commandResolver));
             allCommands.Add(new CoinsCommand(repository));
             allCommands.Add(new BonusCommand(currencyGenerator));
             allCommands.Add(new StreamsCommand(repository));
@@ -60,7 +64,7 @@ namespace DevChatter.Bot.Startup
             allCommands.Add(new RockPaperScissorsCommand(rockPaperScissorsGame));
 
             var commandUsageTracker = new CommandUsageTracker(botConfiguration.CommandHandlerSettings);
-            var commandHandler = new CommandHandler(commandUsageTracker, chatClients, allCommands);
+            var commandHandler = new CommandHandler(commandUsageTracker, chatClients, allCommands, commandResolver);
             var subscriberHandler = new SubscriberHandler(chatClients);
 
             var twitchSystem = new FollowableSystem(new[] { twitchChatClient }, twitchFollowerService);
