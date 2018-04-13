@@ -6,14 +6,14 @@ namespace DevChatter.Bot.Core.Automation
 {
     public class CurrencyUpdate : IIntervalAction
     {
-        private readonly int _intervalInMinutes;
+        private readonly int _intervalSettings;
         private readonly ICurrencyGenerator _currencyGenerator;
         private readonly IClock _clock;
         private DateTime _nextRunTime;
 
-        public CurrencyUpdate(int intervalInMinutes, ICurrencyGenerator currencyGenerator, IClock clock)
+        public CurrencyUpdate(IntervalSettings intervalSettings, ICurrencyGenerator currencyGenerator, IClock clock)
         {
-            _intervalInMinutes = intervalInMinutes;
+            _intervalSettings = intervalSettings.MinutesInterval;
             _currencyGenerator = currencyGenerator;
             _clock = clock;
             SetNextRunTime();
@@ -29,7 +29,7 @@ namespace DevChatter.Bot.Core.Automation
 
         private void SetNextRunTime()
         {
-            _nextRunTime = _clock.Now.AddMinutes(_intervalInMinutes);
+            _nextRunTime = _clock.Now.AddMinutes(_intervalSettings);
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using DevChatter.Bot.Core.Attributes;
 using DevChatter.Bot.Core.Systems.Chat;
 
 namespace DevChatter.Bot.Core.Automation
 {
+    [RegistrationNotAllowed]
     public class DelayedMessageAction : IIntervalAction
     {
         private readonly string _message;

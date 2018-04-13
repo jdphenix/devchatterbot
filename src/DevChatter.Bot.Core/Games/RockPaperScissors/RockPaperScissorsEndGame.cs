@@ -1,9 +1,11 @@
 ﻿using System;
-using DevChatter.Bot.Core.Games.RockPaperScissors;
+using DevChatter.Bot.Core.Attributes;
+using DevChatter.Bot.Core.Automation;
 using DevChatter.Bot.Core.Systems.Chat;
 
-namespace DevChatter.Bot.Core.Automation
+namespace DevChatter.Bot.Core.Games.RockPaperScissors
 {
+    [RegistrationNotAllowed]
     public class RockPaperScissorsEndGame : IIntervalAction
     {
         private readonly RockPaperScissorsGame _rockPaperScissorsGame;
